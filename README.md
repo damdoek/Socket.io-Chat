@@ -1,6 +1,6 @@
 # Socket.io-Chat
-Chat app based on socket.io
+Chat app based on socket.io node and angularjs
 ## Install modules
-nmp install
+$ nmp install
 ## Run
-node app
+$ node app
