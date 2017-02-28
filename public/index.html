@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html ng-app="chat">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KIChaat</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/styles.css" rel="stylesheet">
+
+<!--Icons-->
+<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="angular.min.js"></script>
+<script src="https://cdn.rawgit.com/Luegg/angularjs-scroll-glue/master/src/scrollglue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-sanitize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script src="bower_components/ng-emoticons/src/ng-emoticons.js"></script>
+<link rel="stylesheet" href="https://highlightjs.org/static/styles/github.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="bower_components/ng-emoticons/src/ng-emoticons.css">
+<script src="bower_components\remarkable-bootstrap-notify\dist\bootstrap-notify.js"></script>
+<script src="app.js"></script>
+<script src="js/lumino.glyphs.js"></script>
+
+<!--[if lt IE 9]>
+<![endif]-->
+
+</head>
+
+<body id="chat" ng-controller="chatCtrl">
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span>KIC</span>Chat</a>
+				
+			</div>
+							
+		</div><!-- /.container-fluid -->
+	</nav>
+		
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<form role="search">
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Search">
+			</div>
+		</form>
+		<ul class="nav menu" ng-repeat="logged in connectedUser track by $index">
+			<li><a href="#">
+			<svg class="glyph stroked" style="background:{{logged.color}}">{{logged.user[0].toUpperCase()}}</svg>
+			{{logged.user}}</a></li>
+		</ul>
+
+	</div><!--/.sidebar-->
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
+		
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Let's chat {{user.toUpperCase()}}</h1>
+			</div>
+		</div><!--/.row-->
+		
+		
+						
+		<div class="row">
+			<div class="col-md-12">
+			
+				<div  class="panel panel-default chat">
+					<div class="panel-heading" id="accordion"><svg class="glyph stroked two-messages"><use xlink:href="#stroked-two-messages"></use></svg> Chat</div>
+					<div scroll-glue="glued" class="panel-body">
+						<ul ng-repeat= "item  in  chat">
+							<li class="clearfix {{class(item.username)}}">
+								<span class="chat-img pull-{{class(item.username)}} avatar img-circle" style="background: {{getUserColor(item.username)}}">
+									<p class="avatar_content">{{item.username[0].toUpperCase()}}</p>
+								</span>
+								<div class="chat-body clearfix">
+									<div class="header">
+										<strong class="{{pull(item.username)}} primary-font">{{item.username}}</strong> <small class="text-muted">{{item.time | date:'HH:mm'}}</small>
+									</div>
+									<p ng-bind-html="item.msg | emoticons">
+										
+									</p>
+								</div>
+							</li>
+							
+						</ul>
+
+					</div>
+					<div>
+						<ul class="typing" ng-repeat= "user  in  typing">
+							<li class="typing">
+								<span>{{user}} is typing ...</span>
+							</li>
+						</ul>
+					</div>
+					<div class="panel-footer">
+						<form>
+							<div class="input-group">
+									<input id="msg" type="text" ng-model="message"  class="form-control input-md" placeholder="Type your message here..." />
+									<span class="input-group-btn">
+										<button class="btn btn-success btn-md" ng-click="send()" id="btn-chat">Send</button>
+									</span>
+							</div>
+						</form>
+					</div>
+				</div>
+				
+			</div><!--/.col-->
+		</div><!--/.row-->
+		<div class="row">
+			<div class="col-xs-12 col-md-6 col-lg-3">
+				<div class="panel panel-teal panel-widget">
+					<div class="row no-padding">
+						<div class="col-sm-3 col-lg-5 widget-left">
+							<svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg>
+						</div>
+						<div class="col-sm-9 col-lg-7 widget-right">
+							<div class="large">{{connectedUser.length}}</div>
+							<div class="text-muted">Connected Users</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-6 col-lg-3">
+				<div class="panel panel-orange panel-widget">
+					<div class="row no-padding">
+						<div class="col-sm-3 col-lg-5 widget-left">
+							<svg class="glyph stroked empty-message"><use xlink:href="#stroked-empty-message"></use></svg>
+						</div>
+						<div class="col-sm-9 col-lg-7 widget-right">
+							<div class="large">{{chat.length}}</div>
+							<div class="text-muted">NB mgs form  connection</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->
+	</div>	<!--/.main-->
+	<div class="modal fade login" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-body">
+	      <form class="log">
+	        <input class="in-login" type="text" name="username" placeholder="Choose a nickname" ng-model="newuser"/>
+	      	<button class="login-btn"  type="submit" ng-click="register()"><svg  class="glyph stroked chevron right logi"><use  xlink:href="#stroked-chevron-right"/></svg></button>
+	      </form>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	
+</body>
+
+</html>
